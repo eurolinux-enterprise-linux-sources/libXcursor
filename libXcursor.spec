@@ -1,20 +1,32 @@
+%global tarball libXcursor
+%global gitdate 20130524
+%global gitversion 8f677eaea
+
 Summary: Cursor management library
 Name: libXcursor
 Version: 1.1.13
-Release: 2%{?dist}
+Release: 6%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
-#VCS: git:git://anongit.freedesktop.org/xorg/lib/libXcursor
-Source0: ftp://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
-Source1: index.theme
 
+%if 0%{?gitdate}
+Source0:    %{tarball}-%{gitdate}.tar.bz2
+Source2:    make-git-snapshot.sh
+Source3:    commitid
+%else
+Source0: http://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.bz2
+%endif
+Source1: index.theme
+Source4: index.theme.rhel
+
+BuildRequires: autoconf automake libtool
 BuildRequires: xorg-x11-util-macros
 BuildRequires: xorg-x11-proto-devel
 BuildRequires: libX11-devel
 BuildRequires: libXfixes-devel
 BuildRequires: libXrender-devel >= 0.8.2
-
+BuildRequires: autoconf automake libtool pkgconfig
 
 %description
 This is  a simple library designed to help locate and load cursors.
@@ -31,7 +43,7 @@ Requires: %{name} = %{version}-%{release}
 libXcursor development package.
 
 %prep
-%setup -q
+%setup -q -n %{tarball}-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
 iconv --from=ISO-8859-2 --to=UTF-8 COPYING > COPYING.new && \
 touch -r COPYING COPYING.new && \
 mv COPYING.new COPYING
@@ -40,6 +52,7 @@ mv COPYING.new COPYING
 %define with_static 0
 
 %build
+autoreconf -v --install --force
 #export CFLAGS="$RPM_OPT_FLAGS -DICONDIR=\"%{_datadir}/icons\""
 %configure \
 %if ! %{with_static}
@@ -53,7 +66,11 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/default
+%if 0%{?rhel}
+install -m 644 -p %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/icons/default/index.theme
+%else
 install -m 644 -p %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/default/index.theme
+%endif
 
 # We intentionally don't ship *.la files
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
@@ -66,7 +83,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING README ChangeLog
+%doc AUTHORS COPYING README
 %{_libdir}/libXcursor.so.1
 %{_libdir}/libXcursor.so.1.0.2
 %dir %{_datadir}/icons/default
@@ -85,6 +102,19 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/Xcursor*.3*
 
 %changelog
+* Fri May 24 2013 Adam Jackson <ajax@redhat.com> 1.1.13-6
+- Fix cursor theme in RHEL
+
+* Fri May 24 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.1.13-3.20130524git8f677eaea
+- Update to fix following CVEs:
+- CVE-2013-2003
+
+* Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.1.13-4
+- autoreconf for aarch64
+
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.13-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.13-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
