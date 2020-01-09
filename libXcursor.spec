@@ -1,11 +1,11 @@
 %global tarball libXcursor
-%global gitdate 20130524
+#global gitdate 20130524
 %global gitversion 8f677eaea
 
 Summary: Cursor management library
 Name: libXcursor
-Version: 1.1.13
-Release: 6%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
+Version: 1.1.14
+Release: 2.1%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -20,10 +20,12 @@ Source0: http://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.t
 Source1: index.theme
 Source4: index.theme.rhel
 
+Requires: libX11 >= 1.5.99.902
+
 BuildRequires: autoconf automake libtool
 BuildRequires: xorg-x11-util-macros
 BuildRequires: xorg-x11-proto-devel
-BuildRequires: libX11-devel
+BuildRequires: libX11-devel >= 1.5.99.902
 BuildRequires: libXfixes-devel
 BuildRequires: libXrender-devel >= 0.8.2
 BuildRequires: autoconf automake libtool pkgconfig
@@ -102,6 +104,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/Xcursor*.3*
 
 %changelog
+* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.1.14-2.1
+- Mass rebuild
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.1.14-2
+- Mass rebuild 2013-12-27
+
+* Fri May 31 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.1.14-1
+- libXCursor 1.1.14
+
+* Mon May 27 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.1.13-7.20130524git8f677eaea
+- Require libX11 1.6RC2 for _XEatDataWords
+
 * Fri May 24 2013 Adam Jackson <ajax@redhat.com> 1.1.13-6
 - Fix cursor theme in RHEL
 
