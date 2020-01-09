@@ -1,57 +1,59 @@
-Summary: X.Org X11 libXcursor runtime library
+Summary: Cursor management library
 Name: libXcursor
-Version: 1.1.10
+Version: 1.1.13
 Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
+#VCS: git:git://anongit.freedesktop.org/xorg/lib/libXcursor
 Source0: ftp://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 Source1: index.theme
 
-BuildRequires: pkgconfig
 BuildRequires: xorg-x11-util-macros
 BuildRequires: xorg-x11-proto-devel
 BuildRequires: libX11-devel
 BuildRequires: libXfixes-devel
 BuildRequires: libXrender-devel >= 0.8.2
 
-Obsoletes: XFree86-libs, xorg-x11-libs
 
 %description
-X.Org X11 libXcursor runtime library
+This is  a simple library designed to help locate and load cursors.
+Cursors can be loaded from files or memory. A library of common cursors
+exists which map to the standard X cursor names.Cursors can exist in
+several sizes and the library automatically picks the best size.
 
 %package devel
-Summary: X.Org X11 libXcursor development package
+Summary: Development files for %{name}
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
-Requires: pkgconfig
 
 %description devel
-X.Org X11 libXcursor development package
+libXcursor development package.
 
 %prep
 %setup -q
+iconv --from=ISO-8859-2 --to=UTF-8 COPYING > COPYING.new && \
+touch -r COPYING COPYING.new && \
+mv COPYING.new COPYING
 
 # Disable static library creation by default.
 %define with_static 0
 
 %build
-#export CFLAGS="$RPM_OPT_FLAGS -DICONDIR=\"/usr/share/icons\""
+#export CFLAGS="$RPM_OPT_FLAGS -DICONDIR=\"%{_datadir}/icons\""
 %configure \
 %if ! %{with_static}
-	--disable-static
+ --disable-static
 %endif
-make
+make V=1 %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 
-mkdir -p $RPM_BUILD_ROOT/usr/share/icons/default
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/usr/share/icons/default/index.theme
+mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/default
+install -m 644 -p %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/default/index.theme
 
 # We intentionally don't ship *.la files
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
@@ -68,7 +70,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libXcursor.so.1
 %{_libdir}/libXcursor.so.1.0.2
 %dir %{_datadir}/icons/default
-%config(noreplace) %verify(not md5 size mtime) %{_datadir}/icons/default/index.theme
+%{_datadir}/icons/default/index.theme
 
 %files devel
 %defattr(-,root,root,-)
@@ -83,9 +85,45 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/Xcursor*.3*
 
 %changelog
-* Mon May 10 2010 Ray Strode <rstrode@redhat.com> 1.1.10-2
-- Update default cursor theme to dmz-aa
-  Resolves: #559765
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.13-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Thu Mar 08 2012 Adam Jackson <ajax@redhat.com> 1.1.13-1
+- libXcursor 1.1.13
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.12-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Thu Nov 17 2011 Adam Jackson <ajax@redhat.com> 1.1.12-1
+- libXcursor 1.1.12
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.11-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Fri Feb 04 2011 Ray Strode <rstrode@redhat.com> 1.1.11-2
+- Change the default cursor theme
+  (also make the dependency a soft one)
+
+* Thu Oct 28 2010 Adam Jackson <ajax@redhat.com> 1.1.11-1
+- libXcursor 1.1.11
+
+* Thu Mar 11 2010 Matthias Clasen <mclasen@redhat.com> - 1.1.10-5
+- The theme file should _not_ be a config file
+
+* Tue Mar  9 2010 Matthias Clasen <mclasen@redhat.com> - 1.1.10-4
+- Make default cursor theme inherit dmz-aa instead of Bluecurve
+- Also require the cursor theme package
+
+* Wed Oct 21 2009 Parag <paragn@fedoraproject.org> - 1.1.10-3
+- Merge-Review #226066
+- make is not verbose
+- preserve timestamp of index.theme
+
+* Thu Oct 08 2009 Parag <paragn@fedoraproject.org> - 1.1.10-2
+- Merge-Review #226066
+- Removed XFree86-libs, xorg-x11-libs as Obsoletes
+- Removed BR:pkgconfig
+- Few spec cleanups
 
 * Fri Aug 28 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.1.10-1
 - libXcursor 1.1.10
