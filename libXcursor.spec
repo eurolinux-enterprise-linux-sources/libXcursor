@@ -4,18 +4,18 @@
 
 Summary: Cursor management library
 Name: libXcursor
-Version: 1.1.14
-Release: 8%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
+Version: 1.1.15
+Release: 1%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
 License: MIT
 Group: System Environment/Libraries
-URL: http://www.x.org
+URL: https://www.x.org
 
 %if 0%{?gitdate}
 Source0:    %{tarball}-%{gitdate}.tar.bz2
 Source2:    make-git-snapshot.sh
 Source3:    commitid
 %else
-Source0: http://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.bz2
+Source0: https://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.bz2
 %endif
 Source1: index.theme
 
@@ -99,6 +99,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/Xcursor*.3*
 
 %changelog
+* Tue Apr 24 2018 Adam Jackson <ajax@redhat.com> - 1.1.15-1
+- libXcursor 1.1.15
+
 * Fri Feb 17 2017 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.1.14-8
 - Remove RHEL default cursor theme variant (rhbz#1388458)
 
