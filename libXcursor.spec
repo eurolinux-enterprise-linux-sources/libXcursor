@@ -5,7 +5,7 @@
 Summary: Cursor management library
 Name: libXcursor
 Version: 1.1.14
-Release: 2.1%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
+Release: 8%{?gitdate:.%{gitdate}git%{gitversion}}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.x.org
@@ -18,7 +18,6 @@ Source3:    commitid
 Source0: http://xorg.freedesktop.org/archive/individual/lib/%{name}-%{version}.tar.bz2
 %endif
 Source1: index.theme
-Source4: index.theme.rhel
 
 Requires: libX11 >= 1.5.99.902
 
@@ -68,11 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/default
-%if 0%{?rhel}
-install -m 644 -p %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/icons/default/index.theme
-%else
 install -m 644 -p %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/default/index.theme
-%endif
 
 # We intentionally don't ship *.la files
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
@@ -104,6 +99,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/Xcursor*.3*
 
 %changelog
+* Fri Feb 17 2017 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.1.14-8
+- Remove RHEL default cursor theme variant (rhbz#1388458)
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.14-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.14-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.14-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.14-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1.14-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.1.14-2.1
 - Mass rebuild
 
